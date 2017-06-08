@@ -5,9 +5,10 @@ const _ = require('lodash')
 const parser = require('./src/parser')
 
 function Bot({
-	username=null, 
-	oauth=null, 
-	channel=null
+	username=null,
+	oauth=null,
+	channel=null,
+	secure=true
 }) {
 	if(!username || !oauth || !channel) {
 		throw new Error('Bot() requires options argument')
@@ -16,6 +17,7 @@ function Bot({
 	this.oauth = oauth
 	this.channel = channel.toLowerCase()
 	this.client = null
+	this.secure = secure
 }
 
 Bot.prototype = {
@@ -23,11 +25,11 @@ Bot.prototype = {
 	connect() {
 		return new Promise((resolve, reject) => {
 			this.client = new IRC.Client('irc.chat.twitch.tv', this.username, {
-				port: 443,
+				port: this.secure? 443 : 6667,
 				password: this.oauth,
 				channels: ['#' + this.channel],
 				debug: false,
-				secure: true,
+				secure: this.secure,
 				autoConnect: false
 			})
 			this.client.connect(connected => {
@@ -60,7 +62,7 @@ Bot.prototype = {
 							.then(chatter => resolve(callback(null, chatter)))
 							.catch(err => resolve(callback(err)))
 						}
-					}					
+					}
 				}
 			})
 		})
