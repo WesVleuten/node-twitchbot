@@ -31,7 +31,9 @@ module.exports = {
 	},
 
 	getMessage : function(msg) {
-		return msg.args[0].split(':')[1]
+		var raw = msg.args[0].split(':');
+		raw.shift();
+		return raw.join(':');
 	},
 
 	getChannel : function(msg) {
